@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EthioLearn - Grade 12 Biology Exam</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0fdf4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 15px;
+        }
+
+        .quiz-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 650px;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid #dcfce7;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .header h2 {
+            color: #14532d;
+            margin: 0 0 6px 0;
+            font-size: 1.4rem;
+        }
+
+        .badge {
+            background-color: #16a34a;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: #e2e8f0;
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #16a34a;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            color: #1f2937;
+            margin-bottom: 20px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background-color: #f8fafc;
+            border: 2px solid #cbd5e1;
+            color: #334155;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.98rem;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            background-color: #dcfce7;
+            border-color: #16a34a;
+            color: #14532d;
+        }
+
+        .option-btn.correct-btn {
+            background-color: #16a34a !important;
+            color: white !important;
+            border-color: #16a34a !important;
+        }
+
+        .option-btn.wrong-btn {
+            background-color: #ef4444 !important;
+            color: white !important;
+            border-color: #ef4444 !important;
+        }
+
+        .feedback-box {
+            margin-top: 18px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none;
+            font-size: 0.98rem;
+            line-height: 1.4;
+        }
+
+        .next-btn {
+            margin-top: 20px;
+            background-color: #16a34a;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            display: none;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .next-btn:hover {
+            background-color: #15803d;
+        }
+
+        .result-box {
+            display: none;
+            text-align: center;
+        }
+
+        .result-box h2 {
+            color: #16a34a;
+            font-size: 1.8rem;
+        }
+
+        .restart-btn {
+            background-color: #334155;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-card">
+        <div class="header">
+            <h2>Grade 12 Biology Exam</h2>
+            <span class="badge" id="progress-text">Gaaffii 1 / 22</span>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Box Gaaffiilee -->
+        <div id="quiz-box">
+            <div id="question-text" class="question-text">Gaaffiin asitti ba'a...</div>
+            <div id="options-container" class="options-container"></div>
+            
+            <div id="feedback-box" class="feedback-box"></div>
+
+            <button id="next-btn" class="next-btn" onclick="nextQuestion()">Gaaffii Itti Aanu ➔</button>
+        </div>
+
+        <!-- Box Qabxii Dhumataa -->
+        <div id="result-box" class="result-box">
+            <h2>🎉 Qormaata Xumurtaniirta!</h2>
+            <p id="final-score" style="font-size: 1.4rem; font-weight: bold; color: #1e293b;"></p>
+            <p id="percentage-text" style="font-size: 1.1rem; color: #64748b;"></p>
+            <button class="restart-btn" onclick="restartQuiz()">Lammata Jalqabi 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        // GAAFFIILEE 22 (Q6 - Q27) SUURAA KEESSAA (BOOKLET CODE 657)
+        const questions = [
+            {
+                question: "6. The transport of gases and water through the cell membrane based on concentration gradient is possible because of:",
+                options: ["A. diffusion and osmosis", "B. carrier and channel proteins", "C. facilitated diffusion", "D. active transport"],
+                correct: 0,
+                explanation: "Gases move across membranes down their concentration gradient by simple diffusion, while water moves by osmosis."
+            },
+            {
+                question: "7. The process of taking-in food to generate energy needed for body's different activities is:",
+                options: ["A. excretion", "B. absorption", "C. homeostasis", "D. nutrition"],
+                correct: 3,
+                explanation: "Nutrition is the intake of nutrients/food to provide energy and raw materials for body processes."
+            },
+            {
+                question: "8. If you are asked to write the taxonomic hierarchy of modern human being from the kingdom downwards, what will be the correct sequence of the taxon?",
+                options: [
+                    "A. Animalia → Hominidae → Mammalia → Primata → Homo → Chordata → Homo sapiens",
+                    "B. Animalia → Mammalia → Chordata → Hominidae → Primata → Homo → Homo sapiens",
+                    "C. Animalia → Primata → Mammalia → Chordata → Hominidae → Homo → Homo sapiens",
+                    "D. Animalia → Chordata → Mammalia → Primata → Hominidae → Homo → Homo sapiens"
+                ],
+                correct: 3,
+                explanation: "The correct taxonomic rank from kingdom downwards for humans is: Animalia (Kingdom) → Chordata (Phylum) → Mammalia (Class) → Primata (Order) → Hominidae (Family) → Homo (Genus) → Homo sapiens (Species)."
+            },
+            {
+                question: "9. A sick person who lost his appetite has lost much of his body weight. Which of the following more accurately explains this condition?",
+                options: [
+                    "A. Since there is no food intake, his body muscle starts to respire anaerobically.",
+                    "B. Due to shortage of nutrients, the body is utilizing its fat or protein reserves.",
+                    "C. The person's body is expending its nutrients for immune responses to defend itself.",
+                    "D. The person could unable to do heavy physical exercises to strengthen his muscles."
+                ],
+                correct: 1,
+                explanation: "When food intake stops, the body breaks down stored glycogen, fats, and eventually muscle proteins for energy."
+            },
+            {
+                question: "10. Which one of the following ecological levels includes all the rest?",
+                options: ["A. Biosphere", "B. Biome", "C. Ecosystem", "D. Community"],
+                correct: 0,
+                explanation: "The Biosphere is the global ecological system integrating all living beings and their relationships (includes Biome, Ecosystem, Community, Population, and Organisms)."
+            },
+            {
+                question: "11. Which of the following shows a pair of 'pure' and its 'applied' sub-fields of biology?",
+                options: [
+                    "A. Zoology - forestry",
+                    "B. Botany - plant breeding",
+                    "C. Microbiology - horticulture",
+                    "D. Anatomy - poultry"
+                ],
+                correct: 1,
+                explanation: "Botany is a pure biological science, while plant breeding is an applied plant science field."
+            },
+            {
+                question: "12. Which of the following clearly shows the differences between flowering and non-flowering plants? Flowering plants have:",
+                options: [
+                    "A. vascular bundle while non-flowering plants do not have.",
+                    "B. true roots, stem and leaves, but non-flowering plants do not have.",
+                    "C. seeds while non-flowering plants do not have.",
+                    "D. fruits, but non-flowering plants do not have."
+                ],
+                correct: 3,
+                explanation: "Angiosperms (flowering plants) produce fruits containing seeds, whereas gymnosperms and non-flowering vascular plants do not produce fruits."
+            },
+            {
+                question: "13. In a flower diagram, which part represents the stigma (or pollen receiving structure at the apex of the carpel, labeled 'A')?",
+                options: ["A. Pollen tube", "B. Ovule", "C. Anther", "D. Stigma / Pollen receiving surface"],
+                correct: 3,
+                explanation: "Letter A in a standard carpel diagram points to the Stigma, which receives pollen grains."
+            },
+            {
+                question: "14. From which structure does the seed embryo obtain food until it forms leaf and manufacture its own food?",
+                options: ["A. Seedcoat and hypocotyl", "B. Cotyledon and endosperm", "C. Radicle and plumule", "D. Plumule and epicotyl"],
+                correct: 1,
+                explanation: "The cotyledon(s) and endosperm store nutrients for the embryo during early germination."
+            },
+            {
+                question: "15. Which one of the following statements is INCORRECT about seed dispersal?",
+                options: [
+                    "A. The mechanism of seed dispersal is related to the structural adaptations and overall nature of seeds.",
+                    "B. Seed dispersal is necessary to avoid overcrowding and biological competitions between growing seedlings.",
+                    "C. Different seed dispersal mechanisms ensure plant distribution across wide areas because plants are sessile.",
+                    "D. Water is the main seed dispersal agent for seeds that are covered with hard seed coats."
+                ],
+                correct: 3,
+                explanation: "Seeds dispersed by water usually have spongy or fibrous outer coats that float (e.g., coconut), not just hard seed coats."
+            },
+            {
+                question: "16. It is hoped that students gained a knowledge and skill after learning how to demonstrate water transport in plants using a simple experiment. Through which of the following the knowledge and skill be applied in a real life?",
+                options: [
+                    "A. Cutting stems diagonally to increase the surface area for water flow",
+                    "B. Removing broader leaves of a plant to increase transpiration rate",
+                    "C. Putting garden plants under shade to reduce transpiration",
+                    "D. Regularly watering household plants during high humid day"
+                ],
+                correct: 0,
+                explanation: "Cutting flower/plant stems diagonally in water increases water uptake area, a practical application in floristry and plant care."
+            },
+            {
+                question: "17. Suppose you have a potted growing seedling in your house and you want it to be straight both its shoot and root while it is growing. This can be achieved by:",
+                options: [
+                    "A. placing it in a shady area near the window inside a rotating instrument, and water it from all sides.",
+                    "B. placing it away from the window where there is bright light, add water to all sides and putting it in a rotating instrument.",
+                    "C. adding water to one side of it, and place it away from the window where there is bright light.",
+                    "D. adding water to all sides of it, place it near the window where there is adequate shade putting it inside a rotating instrument."
+                ],
+                correct: 1,
+                explanation: "Even/uniform light exposure and uniform watering prevent phototropism and hydrotropism bending, keeping shoot and root growing straight."
+            },
+            {
+                question: "18. Which one of the following molecules is organic?",
+                options: ["A. Enzymes", "B. Water", "C. Sodium chloride", "D. Hydrogen sulfide"],
+                correct: 0,
+                explanation: "Enzymes are proteins (complex biological organic molecules containing carbon, hydrogen, oxygen, and nitrogen)."
+            },
+            {
+                question: "19. Which one of the following nutrients is correctly matched with its primary role to the human body?",
+                options: [
+                    "A. Protein - immediate energy source",
+                    "B. Carbohydrate - body building",
+                    "C. Lipids - body heat reserve / energy storage",
+                    "D. Nucleic acid - maintain body temperature"
+                ],
+                correct: 2,
+                explanation: "Lipids serve as long-term energy reserves and thermal insulation (body heat reserve)."
+            },
+            {
+                question: "20. Which one of the following statements is correct about phospholipid?",
+                options: [
+                    "A. unique to human, animal and plant cells.",
+                    "B. a component of the nucleic acids, hormone and enzyme.",
+                    "C. the primary source of energy for most organisms.",
+                    "D. a structural component of the cell membrane."
+                ],
+                correct: 3,
+                explanation: "Phospholipids form the phospholipid bilayer, which is the main structural framework of biological cell membranes."
+            },
+            {
+                question: "21. When an individual underwent medical checkup, his overall condition is judged normal except that he is extremely cold-sensitive and has abnormally a dry skin. To which of the following macromolecules the problem most likely related while keeping all other factors normal?",
+                options: ["A. Nucleic acids", "B. Lipids", "C. Carbohydrates", "D. Glycogen"],
+                correct: 1,
+                explanation: "Subcutaneous lipids insulate against cold, and lipid barriers (sebum/essential fatty acids) maintain skin moisture."
+            },
+            {
+                question: "22. A sequence of events that take place in a parent cell as a means of distributing genetic material to form daughter cells is:",
+                options: ["A. cell movement.", "B. cell cycle.", "C. cell aging.", "D. cell signal."],
+                correct: 1,
+                explanation: "The cell cycle is the ordered series of events involving cell growth and cell division that produces daughter cells."
+            },
+            {
+                question: "23. Which one the following end products of digestion move initially into the lacteals for absorption?",
+                options: ["A. Glucose and amino acids", "B. Water and vitamins", "C. Fatty acids and glycerol", "D. Medicines and alcohol"],
+                correct: 2,
+                explanation: "Fatty acids and glycerol (reassembled into chylomicrons) enter the lymphatic lacteals, not the blood capillaries."
+            },
+            {
+                question: "24. Which one of the following statements is correct about the process of digestion in humans? It involves:",
+                options: [
+                    "A. breaks down of large food molecules into absorbable end products.",
+                    "B. mechanical breakdown of carbohydrates into maltose in the small intestine.",
+                    "C. mechanical breakdown of larger molecules in the duodenum.",
+                    "D. enzyme and secretions that best works at common optimum pH."
+                ],
+                correct: 0,
+                explanation: "Chemical and mechanical digestion breaks large insoluble food molecules into smaller soluble molecules that can be absorbed."
+            },
+            {
+                question: "25. What is the role of the microvilli in the wall of the small intestine? Because it:",
+                options: [
+                    "A. produces the gastric juices involved during digestion.",
+                    "B. secretes bile to facilitate fat digestion and absorption.",
+                    "C. increases the surface area for absorption of nutrients.",
+                    "D. specifically adapted to transport lipid digestive end products."
+                ],
+                correct: 2,
+                explanation: "Microvilli form the brush border of enterocytes, greatly increasing the surface area for nutrient absorption."
+            },
+            {
+                question: "26. From a comparison table of Meiosis and Mitosis, which rows correctly compare the process of meiosis and mitosis?",
+                options: [
+                    "A. 1, 2 and 4",
+                    "B. 2, 3 and 4",
+                    "C. 1, 3 and 4",
+                    "D. 1, 2 and 3"
+                ],
+                correct: 2,
+                explanation: "Row 1 (Sexual vs Asexual/Growth), Row 3 (DNA replication in interphase), and Row 4 (Evolution/Variation vs Repair/Growth) are correct comparison points."
+            },
+            {
+                question: "27. Pulmonary circulation differs from systemic circulation in that it is a circulation that:",
+                options: [
+                    "A. pumps blood to the wall of lungs via coronary artery.",
+                    "B. carries deoxygenated blood via pulmonary vein.",
+                    "C. supplies oxygenated blood to the rest body parts.",
+                    "D. takes place between the heart and the lungs."
+                ],
+                correct: 3,
+                explanation: "Pulmonary circulation moves blood between the heart and the lungs, whereas systemic circulation moves blood between the heart and the rest of the body."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const questionTextElement = document.getElementById("question-text");
+        const optionsContainer = document.getElementById("options-container");
+        const feedbackBox = document.getElementById("feedback-box");
+        const nextButton = document.getElementById("next-btn");
+        const progressText = document.getElementById("progress-text");
+        const progressFill = document.getElementById("progress-fill");
+        const quizBox = document.getElementById("quiz-box");
+        const resultBox = document.getElementById("result-box");
+        const finalScoreElement = document.getElementById("final-score");
+        const percentageText = document.getElementById("percentage-text");
+
+        function loadQuestion() {
+            nextButton.style.display = "none";
+            feedbackBox.style.display = "none";
+            
+            let currentQ = questions[currentQuestionIndex];
+            
+            progressText.innerText = `Gaaffii ${currentQuestionIndex + 1} / ${questions.length}`;
+            progressFill.style.width = `${((currentQuestionIndex + 1) / questions.length) * 100}%`;
+            
+            questionTextElement.innerText = currentQ.question;
+            
+            optionsContainer.innerHTML = "";
+            currentQ.options.forEach((optText, index) => {
+                const btn = document.createElement("button");
+                btn.innerText = optText;
+                btn.classList.add("option-btn");
+                btn.onclick = () => selectOption(btn, index);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedBtn, selectedIndex) {
+            let correctIndex = questions[currentQuestionIndex].correct;
+            let currentQ = questions[currentQuestionIndex];
+            const allButtons = optionsContainer.children;
+
+            for (let b of allButtons) {
+                b.disabled = true;
+                b.style.cursor = "not-allowed";
+            }
+
+            feedbackBox.style.display = "block";
+
+            if (selectedIndex === correctIndex) {
+                selectedBtn.classList.add("correct-btn");
+                feedbackBox.innerHTML = `Deebii Sirrii! 🎉<br><small style="font-weight: normal;">${currentQ.explanation}</small>`;
+                feedbackBox.style.backgroundColor = "#dcfce7";
+                feedbackBox.style.color = "#14532d";
+                score++;
+            } else {
+                selectedBtn.classList.add("wrong-btn");
+                allButtons[correctIndex].classList.add("correct-btn");
+                feedbackBox.innerHTML = `Dogoggora! ❌<br><small style="font-weight: normal;">${currentQ.explanation}</small>`;
+                feedbackBox.style.backgroundColor = "#fee2e2";
+                feedbackBox.style.color = "#991b1b";
+            }
+
+            nextButton.style.display = "block";
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            quizBox.style.display = "none";
+            resultBox.style.display = "block";
+            let percent = Math.round((score / questions.length) * 100);
+            finalScoreElement.innerText = `Qabxii Kee: ${score} / ${questions.length}`;
+            percentageText.innerText = `Qabxii dhibbeentaa: ${percent}%`;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            resultBox.style.display = "none";
+            quizBox.style.display = "block";
+            loadQuestion();
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
