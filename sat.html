@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EthioLearn - Verbal Reasoning (SAT) Exam</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 15px;
+        }
+
+        .quiz-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 650px;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .header h2 {
+            color: #0f172a;
+            margin: 0 0 6px 0;
+            font-size: 1.4rem;
+        }
+
+        .badge {
+            background-color: #0284c7;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .category-tag {
+            display: inline-block;
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: #e2e8f0;
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #0284c7;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            color: #1e293b;
+            margin-bottom: 20px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background-color: #f8fafc;
+            border: 2px solid #cbd5e1;
+            color: #334155;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.98rem;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            background-color: #e0f2fe;
+            border-color: #0284c7;
+            color: #0369a1;
+        }
+
+        .option-btn.correct-btn {
+            background-color: #10b981 !important;
+            color: white !important;
+            border-color: #10b981 !important;
+        }
+
+        .option-btn.wrong-btn {
+            background-color: #ef4444 !important;
+            color: white !important;
+            border-color: #ef4444 !important;
+        }
+
+        .feedback-box {
+            margin-top: 18px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .next-btn {
+            margin-top: 20px;
+            background-color: #0284c7;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            display: none;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .next-btn:hover {
+            background-color: #0369a1;
+        }
+
+        .result-box {
+            display: none;
+            text-align: center;
+        }
+
+        .result-box h2 {
+            color: #10b981;
+            font-size: 1.8rem;
+        }
+
+        .restart-btn {
+            background-color: #334155;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-card">
+        <div class="header">
+            <h2>Verbal Reasoning (SAT) Exam</h2>
+            <span class="badge" id="progress-text">Gaaffii 1 / 21</span>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Box Gaaffiilee -->
+        <div id="quiz-box">
+            <span class="category-tag" id="category-tag">Word Substitution</span>
+            <div id="question-text" class="question-text">Gaaffiin asitti ba'a...</div>
+            <div id="options-container" class="options-container"></div>
+            
+            <div id="feedback-box" class="feedback-box"></div>
+
+            <button id="next-btn" class="next-btn" onclick="nextQuestion()">Gaaffii Itti Aanu ➔</button>
+        </div>
+
+        <!-- Box Qabxii Dhumataa -->
+        <div id="result-box" class="result-box">
+            <h2>🎉 Qormaata Xumurtaniirta!</h2>
+            <p id="final-score" style="font-size: 1.4rem; font-weight: bold; color: #1e293b;"></p>
+            <p id="percentage-text" style="font-size: 1.1rem; color: #64748b;"></p>
+            <button class="restart-btn" onclick="restartQuiz()">Lammata Jalqabi 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        // GAAFFIILEE 21'N SUURAA KEESSAA (BOOKLET CODE 588)
+        const questions = [
+            // Word Substitution
+            {
+                category: "Word Substitution",
+                question: "1. Liquid matters are characterized by VOLATILITY among other things.",
+                options: ["A. fluidity", "B. density", "C. velocity", "D. acidity"],
+                correct: 0,
+                explanation: "'Volatility' in liquids refers to the tendency to evaporate or flow easily, synonymous with 'fluidity'."
+            },
+            {
+                category: "Word Substitution",
+                question: "2. He was advised to read the manufacturer's guideline before DISCARDING the manual.",
+                options: ["A. accepting", "B. eliminating", "C. opening", "D. keeping"],
+                correct: 1,
+                explanation: "'Discarding' means getting rid of or throwing away, which corresponds to 'eliminating'."
+            },
+            {
+                category: "Word Substitution",
+                question: "3. The receptionist apologized for the delay, explaining that it had been a HECTIC day.",
+                options: ["A. urgency", "B. hustle", "C. wait", "D. rush"],
+                correct: 3,
+                explanation: "'Hectic' means full of frantic activity or hurry, best substituted by 'rush' or busy day."
+            },
+
+            // Antonyms
+            {
+                category: "Antonyms (Opposites)",
+                question: "4. Girls are usually more INHIBITED than boys to ask questions in the classroom.",
+                options: ["A. courageous", "B. reserved", "C. unreserved", "D. fearless"],
+                correct: 2,
+                explanation: "'Inhibited' means shy or reserved. Its direct opposite (antonym) is 'unreserved'."
+            },
+            {
+                category: "Antonyms (Opposites)",
+                question: "5. The Indian population is predominantly HERBIVOROUS in its dietary tradition.",
+                options: ["A. carnivorous", "B. omnivorous", "C. non-alcoholic", "D. vegetarian"],
+                correct: 0,
+                explanation: "'Herbivorous' means plant-eating. The opposite is 'carnivorous' (meat-eating)."
+            },
+            {
+                category: "Antonyms (Opposites)",
+                question: "6. My brother wants to PURSUE a career in education.",
+                options: ["A. search", "B. follow", "C. engage", "D. leave"],
+                correct: 3,
+                explanation: "'Pursue' means to follow or aim for. The opposite is 'leave' or abandon."
+            },
+
+            // Synonyms
+            {
+                category: "Synonyms (Similar Meaning)",
+                question: "7. The Fascist OCCUPATION of Ethiopia lasted for about five years in spite of the resistance movement.",
+                options: ["A. transformation", "B. civilization", "C. invasion", "D. business"],
+                correct: 2,
+                explanation: "'Occupation' by foreign military forces means 'invasion' or control."
+            },
+            {
+                category: "Synonyms (Similar Meaning)",
+                question: "8. The PREMATURE death of the president was shocking to the nation at large.",
+                options: ["A. mysterious", "B. long overdue", "C. glorious", "D. untimely"],
+                correct: 3,
+                explanation: "'Premature' means happening too soon or before the proper time, i.e., 'untimely'."
+            },
+            {
+                category: "Synonyms (Similar Meaning)",
+                question: "9. Most of the advertisement people are EXPOSED TO falls into the consumer advertising category.",
+                options: ["A. experiencing", "B. suffering", "C. reading", "D. enjoying"],
+                correct: 0,
+                explanation: "Being 'exposed to' advertisements means encountering or 'experiencing' them."
+            },
+
+            // Analogy
+            {
+                category: "Analogy",
+                question: "10. GRAMMAR is to LANGUAGE as Culture is to:",
+                options: ["A. Fact", "B. Knowledge", "C. Philosophy", "D. Society"],
+                correct: 3,
+                explanation: "Grammar provides the structure for a language, just as Culture provides the social structure for a Society."
+            },
+            {
+                category: "Analogy",
+                question: "11. TREES is to FOREST as Tower is to:",
+                options: ["A. City", "B. Scenery", "C. Landscape", "D. Countryside"],
+                correct: 0,
+                explanation: "Trees collectively form a forest, just as towers/skyscrapers are prominent features of a City."
+            },
+            {
+                category: "Analogy",
+                question: "12. COMMODITY : PRODUCTION ::",
+                options: ["A. Mineral : Extraction", "B. Industrial : Medical", "C. Medical : Agricultural", "D. Agricultural : Farming"],
+                correct: 0,
+                explanation: "A commodity is obtained through production, just as a mineral is obtained through extraction."
+            },
+            {
+                category: "Analogy",
+                question: "13. DOGMA : RELIGIOUS :: Ideology :",
+                options: ["A. Political", "B. Physiological", "C. Hypothetical", "D. Theoretical"],
+                correct: 0,
+                explanation: "Dogma is a strict belief in religion, whereas an Ideology is a structured system of belief in Politics."
+            },
+
+            // Classification Items
+            {
+                category: "Classification Items (Odd One Out)",
+                question: "14. Choose the word which does NOT belong to the same category:",
+                options: ["A. melon", "B. grape", "C. apple", "D. corn"],
+                correct: 3,
+                explanation: "'Corn' is a grain/cereal, while melon, grape, and apple are fruits."
+            },
+            {
+                category: "Classification Items (Odd One Out)",
+                question: "15. Choose the word which does NOT belong to the same category:",
+                options: ["A. run", "B. walk", "C. sit", "D. jog"],
+                correct: 2,
+                explanation: "'Sit' is a stationary posture, whereas run, walk, and jog are physical locomotion activities."
+            },
+            {
+                category: "Classification Items (Odd One Out)",
+                question: "16. Choose the word which does NOT belong to the same category:",
+                options: ["A. convey", "B. talk", "C. articulate", "D. convince"],
+                correct: 1,
+                explanation: "'Talk' is general speech, whereas convey, articulate, and convince involve structured or persuasive communication."
+            },
+            {
+                category: "Classification Items (Odd One Out)",
+                question: "17. Choose the word which does NOT belong to the same category:",
+                options: ["A. journal", "B. periodical", "C. notebook", "D. magazine"],
+                correct: 2,
+                explanation: "'Notebook' is a blank writing pad, while journal, periodical, and magazine are published reading materials."
+            },
+
+            // Sentence Correction
+            {
+                category: "Sentence Correction",
+                question: "18. Choose the grammatically CORRECT sentence option:",
+                options: [
+                    "A. The price is depend on how many pieces you buy.",
+                    "B. The price is dependent on how many pieces you buy.",
+                    "C. The price depend on how much pieces you buy.",
+                    "D. The price is dependent on how much pieces you buy."
+                ],
+                correct: 1,
+                explanation: "'The price is dependent on how many pieces...' uses the correct adjective structure and 'many' for countable 'pieces'."
+            },
+            {
+                category: "Sentence Correction",
+                question: "19. Choose the grammatically CORRECT sentence option:",
+                options: [
+                    "A. Reducing inflation is central to the country's economic policy.",
+                    "B. Reducing inflation is central with the country economic policy.",
+                    "C. Reducing inflation is central in the country's economic policy.",
+                    "D. Reducing inflation is central for country economic policy."
+                ],
+                correct: 0,
+                explanation: "The correct preposition phrase is 'central to' followed by possessive 'country's'."
+            },
+            {
+                category: "Sentence Correction",
+                question: "20. Choose the grammatically CORRECT sentence option:",
+                options: [
+                    "A. I asked the bank to borrowing me the money.",
+                    "B. I asked the bank to lend me the money.",
+                    "C. I asked the bank to borrow me the money.",
+                    "D. I asked the bank to lending me the money."
+                ],
+                correct: 1,
+                explanation: "The bank 'lends' money to you; you 'borrow' from the bank. 'To lend me' is the correct infinitive construction."
+            },
+            {
+                category: "Sentence Correction",
+                question: "21. Choose the grammatically CORRECT sentence option:",
+                options: [
+                    "A. I think he did broke the cleaning machine.",
+                    "B. I think he has broken the cleaning machine.",
+                    "C. I think he did broken the cleaning machine.",
+                    "D. I think he was broken the cleaning machine."
+                ],
+                correct: 1,
+                explanation: "Option B uses present perfect tense 'has broken' correctly."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const questionTextElement = document.getElementById("question-text");
+        const optionsContainer = document.getElementById("options-container");
+        const feedbackBox = document.getElementById("feedback-box");
+        const nextButton = document.getElementById("next-btn");
+        const progressText = document.getElementById("progress-text");
+        const progressFill = document.getElementById("progress-fill");
+        const categoryTag = document.getElementById("category-tag");
+        const quizBox = document.getElementById("quiz-box");
+        const resultBox = document.getElementById("result-box");
+        const finalScoreElement = document.getElementById("final-score");
+        const percentageText = document.getElementById("percentage-text");
+
+        function loadQuestion() {
+            nextButton.style.display = "none";
+            feedbackBox.style.display = "none";
+            
+            let currentQ = questions[currentQuestionIndex];
+            
+            categoryTag.innerText = currentQ.category;
+            progressText.innerText = `Gaaffii ${currentQuestionIndex + 1} / ${questions.length}`;
+            progressFill.style.width = `${((currentQuestionIndex + 1) / questions.length) * 100}%`;
+            
+            questionTextElement.innerText = currentQ.question;
+            
+            optionsContainer.innerHTML = "";
+            currentQ.options.forEach((optText, index) => {
+                const btn = document.createElement("button");
+                btn.innerText = optText;
+                btn.classList.add("option-btn");
+                btn.onclick = () => selectOption(btn, index);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedBtn, selectedIndex) {
+            let correctIndex = questions[currentQuestionIndex].correct;
+            let currentQ = questions[currentQuestionIndex];
+            const allButtons = optionsContainer.children;
+
+            for (let b of allButtons) {
+                b.disabled = true;
+                b.style.cursor = "not-allowed";
+            }
+
+            feedbackBox.style.display = "block";
+
+            if (selectedIndex === correctIndex) {
+                selectedBtn.classList.add("correct-btn");
+                feedbackBox.innerHTML = `Deebii Sirrii! 🎉<br><small style="font-weight: normal;">${currentQ.explanation}</small>`;
+                feedbackBox.style.backgroundColor = "#d1fae5";
+                feedbackBox.style.color = "#065f46";
+                score++;
+            } else {
+                selectedBtn.classList.add("wrong-btn");
+                allButtons[correctIndex].classList.add("correct-btn");
+                feedbackBox.innerHTML = `Dogoggora! ❌<br><small style="font-weight: normal;">${currentQ.explanation}</small>`;
+                feedbackBox.style.backgroundColor = "#fee2e2";
+                feedbackBox.style.color = "#991b1b";
+            }
+
+            nextButton.style.display = "block";
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            quizBox.style.display = "none";
+            resultBox.style.display = "block";
+            let percent = Math.round((score / questions.length) * 100);
+            finalScoreElement.innerText = `Qabxii Kee: ${score} / ${questions.length}`;
+            percentageText.innerText = `Qabxii dhibbeentaa: ${percent}%`;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            resultBox.style.display = "none";
+            quizBox.style.display = "block";
+            loadQuestion();
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
